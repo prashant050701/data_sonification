@@ -6,3 +6,5 @@ astroquery
 astropy
 sounddevice
 pyfluidsynth
+pretty_midi
+pydub
