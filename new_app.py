@@ -89,7 +89,7 @@ if st.button('Sonify'):
         column_midi = map_to_midi(column_averages)
 
         fs = fluidsynth.Synth()
-        fs.start(driver="coreaudio")  # Or "alsa" or "dsound"
+        fs.start(driver="alsa") 
         sfid = fs.sfload(soundfont_path)
         fs.program_select(0, sfid, 0, instruments[instrument_name])
 
