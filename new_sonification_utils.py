@@ -29,7 +29,7 @@ def pyfluidsynth_sonify(images, soundfont_path, instrument_index=0, scale_type='
         return None  # Nothing to sonify
 
     fs = fluidsynth.Synth()
-    fs.start(driver="coreaudio")  # Use "coreaudio" for macOS, "dsound" for Windows, or "alsa" for Linux
+    fs.start(driver="alsa")
 
     sfid = fs.sfload(soundfont_path)
     fs.program_select(0, sfid, 0, instrument_index)  # Select the instrument
