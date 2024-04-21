@@ -5,6 +5,6 @@ Pillow
 astroquery
 astropy
 sounddevice
-pyfluidsynth
+pyFluidSynth
 pretty_midi
 pydub
