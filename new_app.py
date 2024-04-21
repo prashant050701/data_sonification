@@ -7,7 +7,6 @@ from astroquery.skyview import SkyView
 from astropy import coordinates as coords
 from astropy import units as u
 from new_sonification_utils import sonify_image, pyfluidsynth_sonify, calculate_column_averages, map_to_midi
-import sounddevice as sd
 import time
 import fluidsynth
 
@@ -22,7 +21,6 @@ instruments = {
     "Trumpet": 56,
 }
 
-
 @st.cache_data
 def get_skyview_image(ra, dec, unit, survey, width, height):
     try:
@@ -32,7 +30,6 @@ def get_skyview_image(ra, dec, unit, survey, width, height):
     except Exception as e:
         st.error(f"Failed to fetch image for {survey}: {str(e)}")
         return None
-
 
 def create_wave_animation(rgb_image, column_index, width, height):
     fig, ax = plt.subplots()
@@ -48,7 +45,6 @@ def create_wave_animation(rgb_image, column_index, width, height):
     frame = Image.open(buf)
     plt.close(fig)
     return frame
-
 
 st.title('Data Sonification of Astronomical Images')
 
@@ -77,20 +73,16 @@ else:
 
 sonification_type = st.selectbox('Choose Sonification Type:', ['Original', 'FluidSynth'])
 
-soundfont_path = 'GeneralUser GS 1.471/GeneralUser GS v1.471.sf2'
-
 if sonification_type == 'FluidSynth':
     instrument_name = st.selectbox('Select Instrument:', list(instruments.keys()))
 
 if st.button('Sonify'):
     if sonification_type == 'FluidSynth':
-        soundfont_path = 'GeneralUser GS 1.471/GeneralUser GS v1.471.sf2'
         column_averages = calculate_column_averages(available_images)
         column_midi = map_to_midi(column_averages)
-
         fs = fluidsynth.Synth()
-        fs.start(driver="alsa") 
-        sfid = fs.sfload(soundfont_path)
+        fs.start(driver="alsa")  # Changed from coreaudio to alsa for Linux compatibility
+        sfid = fs.sfload('GeneralUser GS 1.471/GeneralUser GS v1.471.sf2')
         fs.program_select(0, sfid, 0, instruments[instrument_name])
 
         wave_placeholder = st.empty()
@@ -98,18 +90,14 @@ if st.button('Sonify'):
             fs.noteon(0, note_number, 50)
             wave_image = create_wave_animation(rgb_image, i, width, height)
             wave_placeholder.image(wave_image, use_column_width=True, caption=f'Column {i}')
-            #time.sleep(0.1)  # Adjust timing as needed
             fs.noteoff(0, note_number)
 
         fs.delete()
     else:
+        # Original sonification logic
         audio_segments_with_indices = sonify_image(available_images)
         wave_placeholder = st.empty()
         for audio_segment, column_index in audio_segments_with_indices:
             wave_image = create_wave_animation(rgb_image, column_index, width, height)
             wave_placeholder.image(wave_image, use_column_width=True, caption=f'Column {column_index}')
-            samples = np.array(audio_segment.get_array_of_samples())
-            float_samples = samples.astype(np.float32) / np.iinfo(samples.dtype).max
-            sd.play(float_samples, samplerate=audio_segment.frame_rate)
-            #sd.wait()
-
+            # Removed playback via sounddevice for compatibility with cloud hosting
