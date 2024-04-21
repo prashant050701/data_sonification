@@ -1,2 +1,3 @@
 fluidsynth
 portaudio19-dev
+ffmpeg
