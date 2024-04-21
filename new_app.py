@@ -82,7 +82,7 @@ if st.button('Sonify'):
         column_midi = map_to_midi(column_averages)
         fs = fluidsynth.Synth()
         fs.start(driver="alsa")  # Changed from coreaudio to alsa for Linux compatibility
-        sfid = fs.sfload('GeneralUser GS 1.471/GeneralUser GS v1.471.sf2')
+        sfid = fs.sfload('https://github.com/prashant050701/data_sonification/releases/download/new_sf2/GeneralUser.GS.v1.471.sf2')
         fs.program_select(0, sfid, 0, instruments[instrument_name])
 
         wave_placeholder = st.empty()
